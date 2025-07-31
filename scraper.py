@@ -86,15 +86,10 @@ class YoutubeScraper:
         else:
             df_channel_data.to_csv(csv_path, index=False)
 
-    
-    def get_video_data(self, channel_data):
-        """Get list of video ids from the upload playlist and use it to get details from every single video uploaded"""
-        
+    def get_video_ids(self, channel_data):
         playlist_id = channel_data['uploads_playlist_id']
         video_ids = []
-        videos = []
         next_page_token = None
-        
         print('Collecting videos IDs...')
         while True:
             uploads = self.yt.playlistItems().list(
@@ -112,7 +107,13 @@ class YoutubeScraper:
             if not next_page_token:
                 print('Last page reached...')
                 break
-        
+        return video_ids
+
+
+    def get_video_data(self, channel_data):
+        """Get list of video ids from the upload playlist and use it to get details from every single video uploaded"""
+        videos = []
+        video_ids = self.get_video_ids(channel_data)
         print(f'Collecting data from {len(video_ids)} videos...')
         for id in video_ids:
             try:
