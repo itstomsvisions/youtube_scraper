@@ -1,20 +1,34 @@
 import os
-from dotenv import load_dotenv
 import pandas as pd
+import logging
+from dotenv import load_dotenv
 from googleapiclient.discovery import build
+
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='debug_test.log',
+    filemode='a'
+    )
+
 
 
 class YoutubeScraper:
     """ ... """
     def __init__(self):
         """Initialize api service"""
+        logging.info('Initializing API service...')
         load_dotenv()
         self.devkey = os.getenv('API_KEY')
         if not self.devkey:
-            raise ValueError('Cannot find API_KEY...')
+            logging.error('Cannot find any API_KEY')
+            raise
+        logging.info("API_KEY loaded succesfully!")
         self.api_service_name = 'youtube'
         self.version = 'v3'
         self.yt = build(self.api_service_name, self.version, developerKey=self.devkey)
+        logging.info('API initialized succesfully.')
     
 
     def find_channel_id(self, username):
